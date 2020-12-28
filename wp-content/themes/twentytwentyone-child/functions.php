@@ -28,3 +28,4 @@ if ( ! function_exists( 'suffice_child_enqueue_child_styles' ) ) {
 add_action( 'wp_enqueue_scripts', 'twentytwentyone_child_enqueue_child_styles' );
 
 /*Write here your own functions */
+require_once realpath(dirname(__FILE__).'/orders/functions.php');

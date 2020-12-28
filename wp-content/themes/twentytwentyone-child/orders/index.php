@@ -1,5 +1,5 @@
 <?php 
-/* Template Name: CustomWPPage */
+/* Template Name: CustomOrdersPage */
 ?>
 
 <!DOCTYPE html>
