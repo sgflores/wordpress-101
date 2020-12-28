@@ -19,3 +19,24 @@ function required_word_count_create_table()
 	}
 }
 required_word_count_create_table();
+
+
+add_action('rest_api_init', function () {
+	register_rest_route( 'v1', 'GetAllArticles', array(
+		'methods'  => 'GET',
+		'callback' => 'get_all_articles'
+	));
+	register_rest_route( 'v1', 'UpdateRequiredWordCount', array(
+		'methods'  => 'POST',
+		'callback' => 'update_required_word_count'
+	));
+});
+
+function get_all_articles($request) {
+	return 'GetAllArticles';
+}
+
+function update_required_word_count(WP_REST_Request $request)
+{
+	return 'UpdateRequiredWordCount';
+}
