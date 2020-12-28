@@ -54,5 +54,24 @@ function get_all_articles(WP_REST_Request $request) {
 
 function update_required_word_count(WP_REST_Request $request)
 {
-	return 'UpdateRequiredWordCount';
+	global $wpdb;
+	$count = $request['count'];
+	$orderId = $request['order_id'];
+	if (!$count || !$orderId) {
+		return new WP_Error( 422, 'Required fields are missing: (count, order_id)', array( 'status' => 422 ) );
+	}
+	$table_name = 'wp_required_word_count';
+	$payload = [
+		'count' => $count,
+		'order_id' => $orderId
+	];
+	$count = $wpdb->get_results("SELECT * from {$table_name} WHERE order_id = {$orderId};");
+	if ($count) {
+		$count = $wpdb->update($table_name, $payload, array(
+			'order_id' => $orderId
+		));
+	} else {
+		$count = $wpdb->insert($table_name, $payload);
+	}
+	return new WP_REST_Response('Required word count succesfully updated', 201);
 }

@@ -13,6 +13,9 @@
 
     <style>
         [v-cloak] {display: none}
+        .editable {
+            cursor: pointer;
+        }
     </style>
 
 </head>
@@ -37,7 +40,9 @@
                     <td>{{list.post_date}}</td>
                     <td>{{list.email}}</td>
                     <td>{{list.post_id}}</td>
-                    <td>{{list.count}}</td>
+                    <td class="editable">
+                        <input type="number" required min="0" class="form-control" v-model="list.count" v-on:keyup.enter="updateCount(list)" >
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -55,6 +60,24 @@
                 orders: [],
             },
             methods: {
+                updateCount(list) {
+                    var count = parseInt(list.count);
+                    if (isNaN(count)) {
+                        alert('Invalid count');
+                        list.count = 0;
+                        return;
+                    }
+                    axios.post('/wp-json/v1/UpdateRequiredWordCount', {
+                        'order_id': list.id,
+                        'count': count
+                    })
+                    .then(function(response) {
+                        alert(response.data);
+                    })
+                    .catch(function(error) {
+                        alert(error.response.data.message);
+                    });
+                },
                 getAllOrders() {
                     var vm = this;
                     axios.get('/wp-json/v1/GetAllArticles')
