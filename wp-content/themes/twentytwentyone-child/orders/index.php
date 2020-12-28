@@ -11,9 +11,11 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
         [v-cloak] {display: none}
-        .editable {
+        .pointer {
             cursor: pointer;
         }
     </style>
@@ -28,11 +30,12 @@
     <main class="container" id="app" v-cloak>
         <table class="table table-sm table-striped table-hover">
             <thead>
-                <th>Order ID</th>
-                <th>Date Submitted</th>
-                <th>Client Email</th>
-                <th>Article ID</th>
-                <th>Required Word Count</th>
+                <th class="pointer" v-for="list in header" :key="list.column" @click="sortBy(list)">
+                    <i class="fa fa-sort" v-if="currentSorterColumn != list.column"></i>
+                    <i class="fa fa-sort-up" v-if="currentSorterColumn == list.column && currentSorterValue == 'asc'"></i>
+                    <i class="fa fa-sort-down" v-if="currentSorterColumn == list.column && currentSorterValue == 'desc'"></i>
+                    {{list.label}}
+                </th>
             </thead>
             <tbody>
                 <tr v-for="list in orders" :key="list.id">
@@ -40,7 +43,7 @@
                     <td>{{list.post_date}}</td>
                     <td>{{list.email}}</td>
                     <td>{{list.post_id}}</td>
-                    <td class="editable">
+                    <td class="pointer">
                         <input type="number" required min="0" class="form-control" v-model="list.count" v-on:keyup.enter="updateCount(list)" >
                     </td>
                 </tr>
@@ -58,6 +61,15 @@
             el: '#app',
             data: {
                 orders: [],
+                header: [
+                    { column: 'id', label: 'Order ID' },
+                    { column: 'post_date', label: 'Date Submitted' },
+                    { column: 'email', label: 'Client Email' },
+                    { column: 'post_id', label: 'Article ID' },
+                    { column: 'count', label: 'Required Word Count' }
+                ],
+                currentSorterColumn: '',
+                currentSorterValue: 'asc'
             },
             methods: {
                 updateCount(list) {
@@ -86,6 +98,19 @@
                     })
                     .catch(function(error) {
                         console.log(error.response);
+                    });
+                },
+                sortBy(list) {
+                    var vm = this;
+                    vm.currentSorterColumn = list.column;
+                    vm.currentSorterValue = vm.currentSorterValue == 'asc' ? 'desc' : 'asc';
+                    let asc = vm.currentSorterValue == 'asc' ? 1 : -1;
+                    let desc = vm.currentSorterValue == 'asc' ? -1 : 1;
+                    vm.orders.sort(function(a, b) {
+                        if (a[vm.currentSorterColumn].toLowerCase() > b[vm.currentSorterColumn].toLowerCase()){
+                            return asc;
+                        }
+                        return desc;
                     });
                 }
             },
