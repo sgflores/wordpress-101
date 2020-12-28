@@ -32,8 +32,24 @@ add_action('rest_api_init', function () {
 	));
 });
 
-function get_all_articles($request) {
-	return 'GetAllArticles';
+function get_all_articles(WP_REST_Request $request) {
+	global $wpdb;
+	$sql = "
+		SELECT a.id, a.post_date, coalesce(d.user_email, 'guest') as email, 
+		b.post_id, coalesce(e.count, 0) as count
+		FROM wp_posts a
+		LEFT JOIN wp_postmeta b
+		ON a.id = b.post_id
+		LEFT JOIN wp_users d
+		ON b.meta_value = d.id
+		LEFT JOIN wp_required_word_count e
+		ON a.id = e.order_id
+		where a.post_type = 'shop_order'
+		AND b.meta_key = '_customer_user'
+		order by a.id DESC;
+	";
+	$orders = $wpdb->get_results($sql);
+	return $orders;
 }
 
 function update_required_word_count(WP_REST_Request $request)

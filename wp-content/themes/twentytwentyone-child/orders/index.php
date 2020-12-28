@@ -11,6 +11,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
+    <style>
+        [v-cloak] {display: none}
+    </style>
+
 </head>
 <body>
         
@@ -18,7 +22,7 @@
         <p class="h5 my-0 me-md-auto fw-normal">The Company</p>
     </header>
 
-    <main class="container"  id="app">
+    <main class="container" id="app" v-cloak>
         <table class="table table-sm table-striped table-hover">
             <thead>
                 <th>Order ID</th>
@@ -27,10 +31,46 @@
                 <th>Article ID</th>
                 <th>Required Word Count</th>
             </thead>
+            <tbody>
+                <tr v-for="list in orders" :key="list.id">
+                    <td>{{list.id}}</td>
+                    <td>{{list.post_date}}</td>
+                    <td>{{list.email}}</td>
+                    <td>{{list.post_id}}</td>
+                    <td>{{list.count}}</td>
+                </tr>
+            </tbody>
         </table>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                orders: [],
+            },
+            methods: {
+                getAllOrders() {
+                    var vm = this;
+                    axios.get('/wp-json/v1/GetAllArticles')
+                    .then(function(response) {
+                        vm.orders = response.data;
+                    })
+                    .catch(function(error) {
+                        console.log(error.response);
+                    });
+                }
+            },
+            created() {
+                this.getAllOrders();
+            }
+        });
+    </script>
 
 </body>
 </html>
