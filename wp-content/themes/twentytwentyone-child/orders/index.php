@@ -28,6 +28,7 @@
     </header>
 
     <main class="container" id="app" v-cloak>
+        <div class="alert alert-info">Press enter key to update the required count value</div>
         <table class="table table-sm table-striped table-hover">
             <thead>
                 <th class="pointer" v-for="list in header" :key="list.column" @click="sortBy(list)">
